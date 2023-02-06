@@ -490,7 +490,7 @@ namespace AudioLib
             {"GENRE",       new string[]{"GENRE",   "TCO", "TCON", "GENRE",          "WM/GenreID" } },
             {"COMMENT",     new string[]{"COMMENT", "COM", "COMM", "COMMENT",        "COMMENT" } },
             {"TRACKNUMBER", new string[]{"",        "TRK", "TRCK", "TRACKNUMBER",    "WM/TrackNumber" } },
-            {"DISCNUMBER",  new string[]{"",        "TPA", "TPOS", "",               "" } },
+            {"DISCNUMBER",  new string[]{"",        "TPA", "TPOS", "DISCNUMBER",     "" } },
 
         };
         private string[] mVerTitle = { "ID3V1","ID3V2.2.0", "ID3V2.3.0", "FLAC","ASF" };
