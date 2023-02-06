@@ -54,15 +54,28 @@ namespace AudioLib
         private FileStream mFileStream;
         private YLib ylib = new YLib();
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public FlacFileTagReader()
         {
 
         }
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="path">ファイルパス</param>
         public FlacFileTagReader(string path)
         {
             FileTagReader(path);
         }
 
+        /// <summary>
+        /// ファイルデータの取得
+        /// </summary>
+        /// <param name="path">ファイルパス</param>
+        /// <returns>データ取得有無</returns>
         public bool FileTagReader(string path)
         {
             if (!File.Exists(path))
@@ -103,12 +116,12 @@ namespace AudioLib
                     //  読込終了
                     lastData = true;
                 } else {
-                    ylib.binaryDump(metaDataBlockHeader, 0, readBytes, "MetaDataBlockHeader");
+                    //ylib.binaryDump(metaDataBlockHeader, 0, readBytes, "MetaDataBlockHeader");
                     byte lf = (byte)(metaDataBlockHeader[0] & 0x80);
                     lastData = lf == 0 ? false : true;
                     int blockType = metaDataBlockHeader[0] & 0x7f;
                     int blockSize = (int)ylib.bitReverseConvertLong(metaDataBlockHeader, 1, 3);
-                    System.Diagnostics.Debug.WriteLine("{0} {1} {2} {3}", lf, lastData, blockType, blockSize);
+                    //System.Diagnostics.Debug.WriteLine("{0} {1} {2} {3}", lf, lastData, blockType, blockSize);
                     byte[] buffer = new byte[blockSize];
                     readBytes = mFileStream.Read(buffer, 0, blockSize);
                     mTagSize += readBytes;
@@ -153,7 +166,7 @@ namespace AudioLib
         /// <returns></returns>
         private bool getFlacStreamInfo(byte[] buffer)
         {
-            ylib.binaryDump(buffer, 0, buffer.Length, "getFlacStreamInfo");
+            //ylib.binaryDump(buffer, 0, buffer.Length, "getFlacStreamInfo");
             //  最小ブロックサイズ
             int index = 0;
             int blockSizeMin = (int)ylib.bitReverseConvertLong(buffer, index, 2);
@@ -181,9 +194,9 @@ namespace AudioLib
             Array.Copy(buffer, index, md5Signature, 0, 16);
             string md5 = ylib.binary2HexString(md5Signature, 0, 16);
 
-            System.Diagnostics.Debug.WriteLine("blockSize {0} {1} frameSize {2} {3} SampleRate {4:#,0} channels {5} bit/sample {6} totalSamples {7:#,0}",
-                blockSizeMin, blockSizeMax, frameSizeMin, frameSizeMax, sampleRat, channels, bitPerSample, totalSamples);
-            ylib.binaryDump(md5Signature, 0, 16, "MD5");
+            //System.Diagnostics.Debug.WriteLine("blockSize {0} {1} frameSize {2} {3} SampleRate {4:#,0} channels {5} bit/sample {6} totalSamples {7:#,0}",
+            //    blockSizeMin, blockSizeMax, frameSizeMin, frameSizeMax, sampleRat, channels, bitPerSample, totalSamples);
+            //ylib.binaryDump(md5Signature, 0, 16, "MD5");
 
             mFlacTagList.Add("[FLAC Stream Info]");
             mFlacTagList.Add("BlockSizeMin: " + blockSizeMin.ToString("#,0"));
@@ -212,7 +225,7 @@ namespace AudioLib
         private bool getFlacPadding(byte[] buffer)
         {
             mFlacTagList.Add("[Flac Padding]");
-            ylib.binaryDump(buffer, 0, Math.Min(buffer.Length, 32), "getFlacPadding");
+            //ylib.binaryDump(buffer, 0, Math.Min(buffer.Length, 32), "getFlacPadding");
             return false;
         }
 
@@ -225,7 +238,7 @@ namespace AudioLib
         private bool getFlacAppiication(byte[] buffer)
         {
             mFlacTagList.Add("[Flac Appiication]");
-            ylib.binaryDump(buffer, 0, Math.Min(buffer.Length, 32), "getFlacAppiication");
+            //ylib.binaryDump(buffer, 0, Math.Min(buffer.Length, 32), "getFlacAppiication");
             return false;
         }
 
@@ -237,7 +250,7 @@ namespace AudioLib
         private bool getFlacSeektable(byte[] buffer)
         {
             mFlacTagList.Add("[Flac Seektable]");
-            ylib.binaryDump(buffer, 0, Math.Min(buffer.Length, 32), "getFlacSeektable");
+            //ylib.binaryDump(buffer, 0, Math.Min(buffer.Length, 32), "getFlacSeektable");
             return false;
         }
 
@@ -250,7 +263,7 @@ namespace AudioLib
         /// <returns></returns>
         private bool getFlacVorbisComment(byte[] buffer)
         {
-            ylib.binaryDump(buffer, 0, Math.Min(buffer.Length, 32), "getFlacVorbisComment");
+            //ylib.binaryDump(buffer, 0, Math.Min(buffer.Length, 32), "getFlacVorbisComment");
             mFlacTagList.Add("[Flac Vorbis Comment]");
             Encoding encoding = Encoding.UTF8;
             //  コメント
@@ -258,7 +271,7 @@ namespace AudioLib
             int size = BitConverter.ToInt32(buffer, index);
             index += 4;
             string content = encoding.GetString(buffer, index, size);
-            System.Diagnostics.Debug.WriteLine("{0} {1}: {2}", index, size, content);
+            //System.Diagnostics.Debug.WriteLine("{0} {1}: {2}", index, size, content);
             mFlacTagList.Add(content);
             index += size + 4;
             while (index < buffer.Length) {
@@ -267,7 +280,7 @@ namespace AudioLib
                 index += 4;
                 content = encoding.GetString(buffer, index, size);
                 mFlacTagList.Add(content);
-                System.Diagnostics.Debug.WriteLine("{0} {1}: {2}", index, size, content);
+                //System.Diagnostics.Debug.WriteLine("{0} {1}: {2}", index, size, content);
                 index += size;
                 int n = content.IndexOf("=");
                 //  内容
@@ -292,21 +305,21 @@ namespace AudioLib
         private bool getFlacCuesheet(byte[] buffer)
         {
             mFlacTagList.Add("[Flac Cuesheet]");
-            ylib.binaryDump(buffer, 0, Math.Min(buffer.Length, 32), "getFlacCuesheet");
+            //ylib.binaryDump(buffer, 0, Math.Min(buffer.Length, 32), "getFlacCuesheet");
             return false;
         }
 
         private bool getFlacTrack(byte[] buffer)
         {
             mFlacTagList.Add("[Flac Track]");
-            ylib.binaryDump(buffer, 0, Math.Min(buffer.Length, 32), "getFlacTrack");
+            //ylib.binaryDump(buffer, 0, Math.Min(buffer.Length, 32), "getFlacTrack");
             return false;
         }
 
         private bool getFlacTrackIndex(byte[] buffer)
         {
             mFlacTagList.Add("[Flac TrackIndex]");
-            ylib.binaryDump(buffer, 0, Math.Min(buffer.Length, 32), "getFlacTrackIndex");
+            //ylib.binaryDump(buffer, 0, Math.Min(buffer.Length, 32), "getFlacTrackIndex");
             return false;
         }
 
@@ -317,7 +330,7 @@ namespace AudioLib
         /// <returns></returns>
         private bool getFlacPicture(byte[] buffer)
         {
-            ylib.binaryDump(buffer, 0, Math.Min(buffer.Length, 64), "getFlacPicture");
+            //ylib.binaryDump(buffer, 0, Math.Min(buffer.Length, 64), "getFlacPicture");
             Encoding encoding = Encoding.ASCII;
             //  画像の種類
             int index = 0;
@@ -353,10 +366,10 @@ namespace AudioLib
             mFlacTagList.Add("画像の説明: " + discription);
             mFlacTagList.Add("画像サイズ: " + widthPixels + " X " + heightPixels + " X " + colorDepth);
 
-            System.Diagnostics.Debug.WriteLine("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10}",
-                pictureType, mPictureType[pictureType],
-                MIMEsize, MIMEtypeString, discriptionSize, discription,
-                widthPixels, heightPixels, colorDepth, colorUsedNumber, pictureSize);
+            //System.Diagnostics.Debug.WriteLine("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10}",
+            //    pictureType, mPictureType[pictureType],
+            //    MIMEsize, MIMEtypeString, discriptionSize, discription,
+            //    widthPixels, heightPixels, colorDepth, colorUsedNumber, pictureSize);
 
             //  画像データをImageDataクラスに入れる
             ImageData imageData = new ImageData();
