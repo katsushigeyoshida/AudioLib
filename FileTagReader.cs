@@ -572,7 +572,7 @@ namespace AudioLib
             if (BitConverter.IsLittleEndian)
                 Array.Reverse(frameHeader, 0, 4);
             //int mFrameHeader = BitConverter.ToInt32(frameHeader, 4);
-            ylib.binaryDump(frameHeader, 0, headerSize, "FreameHeader");
+            YLib.binaryDump(frameHeader, 0, headerSize, "FreameHeader");
 
         }
 
@@ -622,7 +622,7 @@ namespace AudioLib
                 mID3Tags.Clear();
                 //  フレームヘッダの取得
                 mFrameIdSize = majorVersion == 2 ? 3 : 4;       // V2.xのフレームIDサイズ
-                mFrameSize = ylib.bit7ConvertLong(mTagData, 3); //  フレームサイズ(下位7bitのSynchsafe整数)
+                mFrameSize = YLib.bit7ConvertLong(mTagData, 3); //  フレームサイズ(下位7bitのSynchsafe整数)
                 //  フレームデータの読み込み
                 mTagData = new byte[mFrameSize];
                 readBytes = mFileStream.Read(mTagData, 0, mTagData.Length);
@@ -640,7 +640,7 @@ namespace AudioLib
                         if (BitConverter.IsLittleEndian) {
                             Array.Reverse(mTagData, index, mFrameIdSize);
                         }
-                        int frameSize = (int)ylib.bitConvertLong(mTagData, index, 3);  //  フレームサイズ(3byte)
+                        int frameSize = (int)YLib.bitConvertLong(mTagData, index, 3);  //  フレームサイズ(3byte)
                         index += mFrameIdSize;
 
                         //  V2.3のフラグ(使わない)
@@ -1090,13 +1090,13 @@ namespace AudioLib
         public int getImageDataSize(int n)
         {
             if (mVer.CompareTo("ASF") == 0) {
-                if (0 < mAsfFileTagReader.mImageData.Count)
+                if (0 < mAsfFileTagReader.mImageData.Count && n < mImageData.Count)
                     return mAsfFileTagReader.mImageData[n].PictureData.Length;
             } else if (mVer.CompareTo("FLAC") == 0) {
-                if (0 < mFlacFileTagReader.mImageData.Count)
+                if (0 < mFlacFileTagReader.mImageData.Count && n < mImageData.Count)
                     return mFlacFileTagReader.mImageData[n].PictureData.Length;
             } else {
-                if (0 < mImageData.Count)
+                if (0 < mImageData.Count && n < mImageData.Count)
                     return mImageData[n].PictureData.Length;
             }
             return 0;
