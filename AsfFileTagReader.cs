@@ -207,13 +207,13 @@ namespace AudioLib
                     int readBytes = mFileStream.Read(mAsfHeader, 0, mAsfHeader.Length);
                     mTagSize = readBytes;
                     if (readBytes == mAsfHeader.Length) {
-                        ylib.binaryDump(mAsfHeader, 0, readBytes, "AsfHeader");
-                        if (ylib.ByteComp(mAsfHeader, 0, ASF_Header_Object, 0, 16)) {
+                        YLib.binaryDump(mAsfHeader, 0, readBytes, "AsfHeader");
+                        if (YLib.ByteComp(mAsfHeader, 0, ASF_Header_Object, 0, 16)) {
                             //  ASF Header Object
                             mAsfTagList.Clear();
                             getWmaTag(mAsfHeader);
                             return true;
-                        } else if (ylib.ByteComp(mAsfHeader, 0, ASF_Data_Object, 0, 16)) {
+                        } else if (YLib.ByteComp(mAsfHeader, 0, ASF_Data_Object, 0, 16)) {
                         }
                         //getFrameHeader();
                     }
@@ -233,69 +233,69 @@ namespace AudioLib
         private void getWmaTag(byte[] asfHeader)
         {
             mAsfTagList.Add("[ASF Header]");
-            int objectSize = (int)ylib.bitConvertLong(asfHeader, 16, 8);    //  ヘッダオブジェクトサイズ
-            int objctNumber = (int)ylib.bitConvertLong(asfHeader, 24, 4);   //  ヘッダオブジェクトの数
+            int objectSize = (int)YLib.bitConvertLong(asfHeader, 16, 8);    //  ヘッダオブジェクトサイズ
+            int objctNumber = (int)YLib.bitConvertLong(asfHeader, 24, 4);   //  ヘッダオブジェクトの数
             byte[] buffer = new byte[objectSize];
             int readBytes = mFileStream.Read(buffer, 0, buffer.Length);
             mTagSize = readBytes;
             int index = 0;
             for (int i = 0; i < objctNumber; i++) {
-                ylib.binaryDump(buffer, index, 34, "Header");
-                if (ylib.ByteComp(buffer, index, ASF_File_Properties_Object, 0, 16)) {
+                YLib.binaryDump(buffer, index, 34, "Header");
+                if (YLib.ByteComp(buffer, index, ASF_File_Properties_Object, 0, 16)) {
                     //  ファイル情報
                     index = getFileProperties(index + 16, buffer);
-                } else if (ylib.ByteComp(buffer, index, ASF_Stream_Properties_Object, 0, 16)) {
+                } else if (YLib.ByteComp(buffer, index, ASF_Stream_Properties_Object, 0, 16)) {
                     //  ストリーム・プロパティ
                     index = getStreamProperties(index + 16, buffer);
-                } else if (ylib.ByteComp(buffer, index, ASF_Header_Extension_Object, 0, 16)) {
+                } else if (YLib.ByteComp(buffer, index, ASF_Header_Extension_Object, 0, 16)) {
                     //  拡張データ(中身不明?)
                     index = getHeaderExtension(index + 16, buffer);
-                } else if (ylib.ByteComp(buffer, index, ASF_Codec_List_Object, 0, 16)) {
+                } else if (YLib.ByteComp(buffer, index, ASF_Codec_List_Object, 0, 16)) {
                     //  コーデックリスト
                     index = getCodecList(index + 16, buffer);
-                } else if (ylib.ByteComp(buffer, index, ASF_Script_Command_Object, 0, 16)) {
+                } else if (YLib.ByteComp(buffer, index, ASF_Script_Command_Object, 0, 16)) {
                     //  スクリプトコマンド
                     index += 16;
-                    objectSize = (int)ylib.bitConvertLong(buffer, index, 8);
+                    objectSize = (int)YLib.bitConvertLong(buffer, index, 8);
                     System.Diagnostics.Debug.WriteLine("{0} ASF_Script_Command_Object", objectSize);
                     index += objectSize - 16;
-                } else if (ylib.ByteComp(buffer, index, ASF_Marker_Object, 0, 16)) {
+                } else if (YLib.ByteComp(buffer, index, ASF_Marker_Object, 0, 16)) {
                     //  マーカー
                     index += 16;
-                    objectSize = (int)ylib.bitConvertLong(buffer, index, 8);
+                    objectSize = (int)YLib.bitConvertLong(buffer, index, 8);
                     System.Diagnostics.Debug.WriteLine("{0} ASF_Marker_Object", objectSize);
                     index += objectSize - 16;
-                } else if (ylib.ByteComp(buffer, index, ASF_Bitrate_Mutual_Exclusion_Object, 0, 16)) {
+                } else if (YLib.ByteComp(buffer, index, ASF_Bitrate_Mutual_Exclusion_Object, 0, 16)) {
                     //  ビットレート相互排他
                     index += 16;
-                    objectSize = (int)ylib.bitConvertLong(buffer, index, 8);
+                    objectSize = (int)YLib.bitConvertLong(buffer, index, 8);
                     System.Diagnostics.Debug.WriteLine("{0} ASF_Bitrate_Mutual_Exclusion_Object", objectSize);
                     index += objectSize - 16;
-                } else if (ylib.ByteComp(buffer, index, ASF_Error_Correction_Object, 0, 16)) {
+                } else if (YLib.ByteComp(buffer, index, ASF_Error_Correction_Object, 0, 16)) {
                     //  エラー訂正
                     index += 16;
-                    objectSize = (int)ylib.bitConvertLong(buffer, index, 8);
+                    objectSize = (int)YLib.bitConvertLong(buffer, index, 8);
                     System.Diagnostics.Debug.WriteLine("{0} ASF_Error_Correction_Object", objectSize);
                     index += objectSize - 16;
-                } else if (ylib.ByteComp(buffer, index, ASF_Content_Description_Object, 0, 16)) {
+                } else if (YLib.ByteComp(buffer, index, ASF_Content_Description_Object, 0, 16)) {
                     //  コンテンツ情報(タイトル、著者、著作権、説明、評価情報など)
                     index = getContentDescription(index + 16, buffer);
-                } else if (ylib.ByteComp(buffer, index, ASF_Extended_Content_Description_Object, 0, 16)) {
+                } else if (YLib.ByteComp(buffer, index, ASF_Extended_Content_Description_Object, 0, 16)) {
                     //  拡張コンテンツ情報
                     index = getExtendedContentDescription(index + 16, buffer);
-                } else if (ylib.ByteComp(buffer, index, ASF_Content_Branding_Object, 0, 16)) {
+                } else if (YLib.ByteComp(buffer, index, ASF_Content_Branding_Object, 0, 16)) {
                     //  コンテンツブランディング(バナー イメージに関する情報,画像データ)
                     index += 16;
-                    objectSize = (int)ylib.bitConvertLong(buffer, index, 8);
+                    objectSize = (int)YLib.bitConvertLong(buffer, index, 8);
                     System.Diagnostics.Debug.WriteLine("{0} ASF_Content_Branding_Object", objectSize);
                     index += objectSize - 16;
-                } else if (ylib.ByteComp(buffer, index, ASF_Stream_Bitrate_Properties_Object, 0, 16)) {
+                } else if (YLib.ByteComp(buffer, index, ASF_Stream_Bitrate_Properties_Object, 0, 16)) {
                     //  ストリームビットレートプロパティ
                     index = getStreamBitrateProperties(index + 16, buffer);
                 } else {
-                    ylib.binaryDump(buffer, index, 32, "Header");
+                    YLib.binaryDump(buffer, index, 32, "Header");
                     index += 16;
-                    objectSize = (int)ylib.bitConvertLong(buffer, index, 8);
+                    objectSize = (int)YLib.bitConvertLong(buffer, index, 8);
                     System.Diagnostics.Debug.WriteLine("{0} Header", objectSize);
                     index += objectSize;
                 }
@@ -312,31 +312,31 @@ namespace AudioLib
         private int getFileProperties(int index, byte[] buffer)
         {
             Encoding encoding = Encoding.Unicode;
-            int objectSize = (int)ylib.bitConvertLong(buffer, index, 8);
+            int objectSize = (int)YLib.bitConvertLong(buffer, index, 8);
             System.Diagnostics.Debug.WriteLine("{0} ASF_File_Properties_Object", objectSize);
             index += 8;
             //ylib.binaryDump(buffer, index, objectSize, "Object");
-            string fileID = ylib.binary2HexString(buffer, index, 16);
+            string fileID = YLib.binary2HexString(buffer, index, 16);
             index += 16;
-            long fileSize = ylib.bitConvertLong(buffer, index, 8);
+            long fileSize = YLib.bitConvertLong(buffer, index, 8);
             index += 8;
-            long createDate = ylib.bitConvertLong(buffer, index, 8);  //  システム時刻(1601/01/01 0.1msec単位)
+            long createDate = YLib.bitConvertLong(buffer, index, 8);  //  システム時刻(1601/01/01 0.1msec単位)
             index += 8;
-            long dataPacketsCount = ylib.bitConvertLong(buffer, index, 8);  //  データパケット数
+            long dataPacketsCount = YLib.bitConvertLong(buffer, index, 8);  //  データパケット数
             index += 8;
-            long playDuration = ylib.bitConvertLong(buffer, index, 8);  //  再生時間(100nsec)
+            long playDuration = YLib.bitConvertLong(buffer, index, 8);  //  再生時間(100nsec)
             index += 8;
-            long sendDuration = ylib.bitConvertLong(buffer, index, 8);  //  送信時間(100nsec)
+            long sendDuration = YLib.bitConvertLong(buffer, index, 8);  //  送信時間(100nsec)
             index += 8;
-            long preroll = ylib.bitConvertLong(buffer, index, 8);       //  再生を開始するまでのバッファリング時間
+            long preroll = YLib.bitConvertLong(buffer, index, 8);       //  再生を開始するまでのバッファリング時間
             index += 8;
-            int flags = (int)ylib.bitConvertLong(buffer, index, 4);     //  フラグ
+            int flags = (int)YLib.bitConvertLong(buffer, index, 4);     //  フラグ
             index += 4;
-            int minmumDataPacketSize = (int)ylib.bitConvertLong(buffer, index, 4);  //  最小データパケットサイズ
+            int minmumDataPacketSize = (int)YLib.bitConvertLong(buffer, index, 4);  //  最小データパケットサイズ
             index += 4;
-            int maximumDataPacketSize = (int)ylib.bitConvertLong(buffer, index, 4);  //  最大データパケットサイズ
+            int maximumDataPacketSize = (int)YLib.bitConvertLong(buffer, index, 4);  //  最大データパケットサイズ
             index += 4;
-            int maximumBitrate = (int)ylib.bitConvertLong(buffer, index, 4);    //  最大ビットレート
+            int maximumBitrate = (int)YLib.bitConvertLong(buffer, index, 4);    //  最大ビットレート
             index += 4;
 
             mAsfTagList.Add("[File Properties]");
@@ -371,29 +371,29 @@ namespace AudioLib
         private int getStreamProperties(int index, byte[] buffer)
         {
             Encoding encoding = Encoding.Unicode;
-            long objectSize = ylib.bitConvertLong(buffer, index, 8);
+            long objectSize = YLib.bitConvertLong(buffer, index, 8);
             System.Diagnostics.Debug.WriteLine("{0} ASF_Stream_Properties_Object", objectSize);
             index += 8;
             //ylib.binaryDump(buffer, index, (int)objectSize, "Object");
-            byte[] streamTypeGUID = ylib.ByteCopy(buffer, index, 16);
-            string streamType = ylib.binary2HexString(buffer, index, 16);   //  ストリームの種類(ASF_Audio_Media)
+            byte[] streamTypeGUID = YLib.ByteCopy(buffer, index, 16);
+            string streamType = YLib.binary2HexString(buffer, index, 16);   //  ストリームの種類(ASF_Audio_Media)
             index += 16;
-            byte[] errorCorrectionTypeGUID = ylib.ByteCopy(buffer, index, 16);
-            string errorCorrectionType = ylib.binary2HexString(buffer, index, 16);
+            byte[] errorCorrectionTypeGUID = YLib.ByteCopy(buffer, index, 16);
+            string errorCorrectionType = YLib.binary2HexString(buffer, index, 16);
             index += 16;
-            long timeOffset = ylib.bitConvertLong(buffer, index, 8);
+            long timeOffset = YLib.bitConvertLong(buffer, index, 8);
             index += 8;
-            int typeSpecificDataLength = (int)ylib.bitConvertLong(buffer, index, 4);
+            int typeSpecificDataLength = (int)YLib.bitConvertLong(buffer, index, 4);
             index += 4;
-            int errorCorrectionDataLength = (int)ylib.bitConvertLong(buffer, index, 4);
+            int errorCorrectionDataLength = (int)YLib.bitConvertLong(buffer, index, 4);
             index += 4;
-            int flags = (int)ylib.bitConvertLong(buffer, index, 2);
+            int flags = (int)YLib.bitConvertLong(buffer, index, 2);
             index += 2;
-            int reserved = (int)ylib.bitConvertLong(buffer, index, 4);
+            int reserved = (int)YLib.bitConvertLong(buffer, index, 4);
             index += 4;
-            string typeSpecificData = ylib.binary2HexString(buffer, index, typeSpecificDataLength);
+            string typeSpecificData = YLib.binary2HexString(buffer, index, typeSpecificDataLength);
             index += typeSpecificDataLength;
-            string errorCorrectionData = ylib.binary2HexString(buffer, index, errorCorrectionDataLength);
+            string errorCorrectionData = YLib.binary2HexString(buffer, index, errorCorrectionDataLength);
             index += errorCorrectionDataLength;
 
             mAsfTagList.Add("[Stream Properties]");
@@ -422,15 +422,15 @@ namespace AudioLib
         private int getHeaderExtension(int index, byte[] buffer)
         {
             Encoding encoding = Encoding.Unicode;
-            int objectSize = (int)ylib.bitConvertLong(buffer, index, 8);
+            int objectSize = (int)YLib.bitConvertLong(buffer, index, 8);
             System.Diagnostics.Debug.WriteLine("{0} ASF_Header_Extension_Object", objectSize);
             index += 8;
             //ylib.binaryDump(buffer, index, objectSize, "Object");
-            string reservedField1 = ylib.binary2HexString(buffer, index, 16);
+            string reservedField1 = YLib.binary2HexString(buffer, index, 16);
             index += 16;
-            int reservedField2 = (int)ylib.bitConvertLong(buffer, index, 2);
+            int reservedField2 = (int)YLib.bitConvertLong(buffer, index, 2);
             index += 2;
-            int headerExtensionDataSize = (int)ylib.bitConvertLong(buffer, index, 4);
+            int headerExtensionDataSize = (int)YLib.bitConvertLong(buffer, index, 4);
             index += 4;
             //byte[] headerExtensionData = new byte[headerExtensionDataSize];
             //string headerExtensionData = ylib.binary2HexString(buffer, index, headerExtensionDataSize);
@@ -455,33 +455,33 @@ namespace AudioLib
         private int getCodecList(int index, byte[] buffer)
         {
             Encoding encoding = Encoding.Unicode;
-            int objectSize = (int)ylib.bitConvertLong(buffer, index, 8);
+            int objectSize = (int)YLib.bitConvertLong(buffer, index, 8);
             System.Diagnostics.Debug.WriteLine("{0} ASF_Codec_List_Object", objectSize);
             index += 8;
             //ylib.binaryDump(buffer, index, objectSize, "Object");
-            string reservedField = ylib.binary2HexString(buffer, index, 16);
+            string reservedField = YLib.binary2HexString(buffer, index, 16);
             index += 16;
-            int codecEntriesCount = (int)ylib.bitConvertLong(buffer, index, 4);
+            int codecEntriesCount = (int)YLib.bitConvertLong(buffer, index, 4);
             index += 4;
             mAsfTagList.Add("[Codec List]");
             for (int i = 0; i < codecEntriesCount; i++) {
-                int type = (int)ylib.bitConvertLong(buffer, index, 2);
+                int type = (int)YLib.bitConvertLong(buffer, index, 2);
                 index += 2;
-                int codecNameLength = (int)ylib.bitConvertLong(buffer, index, 2) * 2;
+                int codecNameLength = (int)YLib.bitConvertLong(buffer, index, 2) * 2;
                 index += 2;
                 string codecName = "";
                 if (0 < codecNameLength)
                     codecName = encoding.GetString(buffer, index, codecNameLength - 2);
                 index += codecNameLength;
-                int codecDescriptionLength = (int)ylib.bitConvertLong(buffer, index, 2) * 2;
+                int codecDescriptionLength = (int)YLib.bitConvertLong(buffer, index, 2) * 2;
                 index += 2;
                 string codecDescription = "";
                 if (0 < codecDescriptionLength)
                     codecDescription = encoding.GetString(buffer, index, codecDescriptionLength - 2);
                 index += codecDescriptionLength;
-                int codecInformationLength = (int)ylib.bitConvertLong(buffer, index, 2);
+                int codecInformationLength = (int)YLib.bitConvertLong(buffer, index, 2);
                 index += 2;
-                string codecInformation = ylib.binary2HexString(buffer, index, codecInformationLength);
+                string codecInformation = YLib.binary2HexString(buffer, index, codecInformationLength);
                 index += codecInformationLength;
 
                 //  データをタグリストに登録
@@ -518,19 +518,19 @@ namespace AudioLib
         private int getContentDescription(int index, byte[] buffer)
         {
             Encoding encoding = Encoding.Unicode;
-            int objectSize = (int)ylib.bitConvertLong(buffer, index, 8);
+            int objectSize = (int)YLib.bitConvertLong(buffer, index, 8);
             System.Diagnostics.Debug.WriteLine("{0} ASF_Content_Description_Object", objectSize);
             index += 8;
             //ylib.binaryDump(buffer, index, objectSize, "Object");
-            int titleLength = (int)ylib.bitConvertLong(buffer, index, 2);
+            int titleLength = (int)YLib.bitConvertLong(buffer, index, 2);
             index += 2;
-            int autherLength = (int)ylib.bitConvertLong(buffer, index, 2);
+            int autherLength = (int)YLib.bitConvertLong(buffer, index, 2);
             index += 2;
-            int copyrightLength = (int)ylib.bitConvertLong(buffer, index, 2);
+            int copyrightLength = (int)YLib.bitConvertLong(buffer, index, 2);
             index += 2;
-            int descriptionLength = (int)ylib.bitConvertLong(buffer, index, 2);
+            int descriptionLength = (int)YLib.bitConvertLong(buffer, index, 2);
             index += 2;
-            int ratingLength = (int)ylib.bitConvertLong(buffer, index, 2);
+            int ratingLength = (int)YLib.bitConvertLong(buffer, index, 2);
             index += 2;
             string title = "";
             if (0 < titleLength)
@@ -586,25 +586,25 @@ namespace AudioLib
         private int getExtendedContentDescription(int index, byte[] buffer)
         {
             Encoding encoding = Encoding.Unicode;
-            int objectSize = (int)ylib.bitConvertLong(buffer, index, 8);
+            int objectSize = (int)YLib.bitConvertLong(buffer, index, 8);
             System.Diagnostics.Debug.WriteLine("{0} ASF_Extended_Content_Description_Object", objectSize);
             index += 8;
             //ylib.binaryDump(buffer, index, objectSize, "Object");
-            int contentDescriptionCount = (int)ylib.bitConvertLong(buffer, index, 2);
+            int contentDescriptionCount = (int)YLib.bitConvertLong(buffer, index, 2);
             index += 2;
             System.Diagnostics.Debug.WriteLine("{0}:[{1}]",
                 objectSize, contentDescriptionCount);
             mAsfTagList.Add("[Extended Content]");
             for (int j = 0; j < contentDescriptionCount; j++) {
-                int descriptorNameLength = (int)ylib.bitConvertLong(buffer, index, 2);
+                int descriptorNameLength = (int)YLib.bitConvertLong(buffer, index, 2);
                 index += 2;
                 string descriptorName = "";
                 if (0 < descriptorNameLength)
                     descriptorName = encoding.GetString(buffer, index, descriptorNameLength - 2);
                 index += descriptorNameLength;
-                int descriptorValueDateType = (int)ylib.bitConvertLong(buffer, index, 2);
+                int descriptorValueDateType = (int)YLib.bitConvertLong(buffer, index, 2);
                 index += 2;
-                int descriptorValueLength = (int)ylib.bitConvertLong(buffer, index, 2);
+                int descriptorValueLength = (int)YLib.bitConvertLong(buffer, index, 2);
                 index += 2;
                 string descriptorValue = "";
                 byte[] descriptorValueArray = new byte[0];
@@ -613,23 +613,23 @@ namespace AudioLib
                     descriptorValue = encoding.GetString(buffer, index, descriptorValueLength - 2);
                 } else if (descriptorValueDateType == 1) {
                     //  BYTE array
-                    descriptorValueArray = ylib.ByteCopy(buffer, index, descriptorValueLength);
-                    descriptorValue = ylib.binary2HexString(descriptorValueArray, 0, Math.Min(descriptorValueArray.Length, 16));
+                    descriptorValueArray = YLib.ByteCopy(buffer, index, descriptorValueLength);
+                    descriptorValue = YLib.binary2HexString(descriptorValueArray, 0, Math.Min(descriptorValueArray.Length, 16));
                 } else if (descriptorValueDateType == 2) {
                     //  BOOL
-                    int descriptor = (int)ylib.bitConvertLong(buffer, index, 4);
+                    int descriptor = (int)YLib.bitConvertLong(buffer, index, 4);
                     descriptorValue = (descriptor == 0 ? "false" : "true");
                 } else if (descriptorValueDateType == 3) {
                     //  DWORD
-                    int descriptor = (int)ylib.bitConvertLong(buffer, index, 4);
+                    int descriptor = (int)YLib.bitConvertLong(buffer, index, 4);
                     descriptorValue = descriptor.ToString();
                 } else if (descriptorValueDateType == 4) {
                     //  QWORD
-                    long descriptor = ylib.bitConvertLong(buffer, index, 8);
+                    long descriptor = YLib.bitConvertLong(buffer, index, 8);
                     descriptorValue = descriptor.ToString();
                 } else if (descriptorValueDateType == 5) {
                     //  WORD
-                    int descriptor = (int)ylib.bitConvertLong(buffer, index, 2);
+                    int descriptor = (int)YLib.bitConvertLong(buffer, index, 2);
                 } else {
                     descriptorValue = "";
                 }
@@ -675,18 +675,18 @@ namespace AudioLib
         private int getStreamBitrateProperties(int index, byte[] buffer)
         {
             Encoding encoding = Encoding.Unicode;
-            int objectSize = (int)ylib.bitConvertLong(buffer, index, 8);
+            int objectSize = (int)YLib.bitConvertLong(buffer, index, 8);
             System.Diagnostics.Debug.WriteLine("{0} ASF_Stream_Bitrate_Properties_Object", objectSize);
             index += 8;
             //ylib.binaryDump(buffer, index, objectSize, "Object");
-            int bitrateRecordsCount = (int)ylib.bitConvertLong(buffer, index, 2);
+            int bitrateRecordsCount = (int)YLib.bitConvertLong(buffer, index, 2);
             index += 2;
             System.Diagnostics.Debug.WriteLine("[{0}]", bitrateRecordsCount);
             mAsfTagList.Add("[Stream Bitrate Properties]");
             for (int i = 0; i < bitrateRecordsCount; i++) {
-                int flags = (int)ylib.bitConvertLong(buffer, index, 2);
+                int flags = (int)YLib.bitConvertLong(buffer, index, 2);
                 index += 2;
-                int averageBitrate = (int)ylib.bitConvertLong(buffer, index, 4);
+                int averageBitrate = (int)YLib.bitConvertLong(buffer, index, 4);
                 index += 4;
 
                 mAsfTagList.Add("平均ビットレート: [" + (flags & 0x7F) + "] " + averageBitrate);
@@ -733,7 +733,7 @@ namespace AudioLib
         private string GUID2String(NameGUID[] nameGuid, byte[] guid)
         {
             for (int i = 0; i < nameGuid.Length; i++) {
-                if (ylib.ByteComp(guid, nameGuid[i].GUID))
+                if (YLib.ByteComp(guid, nameGuid[i].GUID))
                     return nameGuid[i].Name;
             }
             return "";

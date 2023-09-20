@@ -52,7 +52,6 @@ namespace AudioLib
         public List<ImageData> mImageData = new List<ImageData>();
 
         private FileStream mFileStream;
-        private YLib ylib = new YLib();
 
         /// <summary>
         /// コンストラクタ
@@ -120,7 +119,7 @@ namespace AudioLib
                     byte lf = (byte)(metaDataBlockHeader[0] & 0x80);
                     lastData = lf == 0 ? false : true;
                     int blockType = metaDataBlockHeader[0] & 0x7f;
-                    int blockSize = (int)ylib.bitReverseConvertLong(metaDataBlockHeader, 1, 3);
+                    int blockSize = (int)YLib.bitReverseConvertLong(metaDataBlockHeader, 1, 3);
                     //System.Diagnostics.Debug.WriteLine("{0} {1} {2} {3}", lf, lastData, blockType, blockSize);
                     byte[] buffer = new byte[blockSize];
                     readBytes = mFileStream.Read(buffer, 0, blockSize);
@@ -169,30 +168,30 @@ namespace AudioLib
             //ylib.binaryDump(buffer, 0, buffer.Length, "getFlacStreamInfo");
             //  最小ブロックサイズ
             int index = 0;
-            int blockSizeMin = (int)ylib.bitReverseConvertLong(buffer, index, 2);
+            int blockSizeMin = (int)YLib.bitReverseConvertLong(buffer, index, 2);
             //  最大ブロックサイズ
             index += 2;
-            int blockSizeMax = (int)ylib.bitReverseConvertLong(buffer, index, 2);
+            int blockSizeMax = (int)YLib.bitReverseConvertLong(buffer, index, 2);
             //  フレーム最小サイズ
             index += 2;
-            int frameSizeMin = (int)ylib.bitReverseConvertLong(buffer, index, 3);
+            int frameSizeMin = (int)YLib.bitReverseConvertLong(buffer, index, 3);
             //  フレーム最大サイズ
             index += 3;
-            int frameSizeMax = (int)ylib.bitReverseConvertLong(buffer, index, 3);
+            int frameSizeMax = (int)YLib.bitReverseConvertLong(buffer, index, 3);
             //  サンプル周波数
             index += 3;
-            int sampleRat = (int)ylib.bitConvertBit(buffer, index * 8, 20);
+            int sampleRat = (int)YLib.bitConvertBit(buffer, index * 8, 20);
             //  チャンネル数(channels - 1)
-            int channels = (int)ylib.bitConvertBit(buffer, index * 8 + 20, 3) + 1;
+            int channels = (int)YLib.bitConvertBit(buffer, index * 8 + 20, 3) + 1;
             //  量子化ビット(4～32bit)(bit/sample - 1)
-            int bitPerSample = (int)ylib.bitConvertBit(buffer, index * 8 + 20 + 3, 5) + 1;
+            int bitPerSample = (int)YLib.bitConvertBit(buffer, index * 8 + 20 + 3, 5) + 1;
             //  サンプリングのデータ数
-            int totalSamples = (int)ylib.bitConvertBit(buffer, index * 8 + 20 + 3 + 5, 36);
+            int totalSamples = (int)YLib.bitConvertBit(buffer, index * 8 + 20 + 3 + 5, 36);
             //  音楽データのMD5値
             index += 8;
             byte[] md5Signature = new byte[16];
             Array.Copy(buffer, index, md5Signature, 0, 16);
-            string md5 = ylib.binary2HexString(md5Signature, 0, 16);
+            string md5 = YLib.binary2HexString(md5Signature, 0, 16);
 
             //System.Diagnostics.Debug.WriteLine("blockSize {0} {1} frameSize {2} {3} SampleRate {4:#,0} channels {5} bit/sample {6} totalSamples {7:#,0}",
             //    blockSizeMin, blockSizeMax, frameSizeMin, frameSizeMax, sampleRat, channels, bitPerSample, totalSamples);
@@ -334,30 +333,30 @@ namespace AudioLib
             Encoding encoding = Encoding.ASCII;
             //  画像の種類
             int index = 0;
-            int pictureType = (int)ylib.bitReverseConvertLong(buffer, index, 4);
+            int pictureType = (int)YLib.bitReverseConvertLong(buffer, index, 4);
             //  MIMEタイプ
             index += 4;
-            int MIMEsize = (int)ylib.bitReverseConvertLong(buffer, index, 4);
+            int MIMEsize = (int)YLib.bitReverseConvertLong(buffer, index, 4);
             index += 4;
             string MIMEtypeString = encoding.GetString(buffer, index, MIMEsize);
             //  画像の説明
             index += MIMEsize;
-            int discriptionSize = (int)ylib.bitReverseConvertLong(buffer, index, 4);
+            int discriptionSize = (int)YLib.bitReverseConvertLong(buffer, index, 4);
             index += 4;
             encoding = Encoding.UTF8;
             string discription = encoding.GetString(buffer, index, discriptionSize);
             //  画像の幅、高さ、色深度、色の数
             index += discriptionSize;
-            int widthPixels = (int)ylib.bitReverseConvertLong(buffer, index, 4);
+            int widthPixels = (int)YLib.bitReverseConvertLong(buffer, index, 4);
             index += 4;
-            int heightPixels = (int)ylib.bitReverseConvertLong(buffer, index, 4);
+            int heightPixels = (int)YLib.bitReverseConvertLong(buffer, index, 4);
             index += 4;
-            int colorDepth = (int)ylib.bitReverseConvertLong(buffer, index, 4);
+            int colorDepth = (int)YLib.bitReverseConvertLong(buffer, index, 4);
             index += 4;
-            int colorUsedNumber = (int)ylib.bitReverseConvertLong(buffer, index, 4);
+            int colorUsedNumber = (int)YLib.bitReverseConvertLong(buffer, index, 4);
             //  画像データのサイズ
             index += 4;
-            int pictureSize = (int)ylib.bitReverseConvertLong(buffer, index, 4);
+            int pictureSize = (int)YLib.bitReverseConvertLong(buffer, index, 4);
             index += 4;
 
             mFlacTagList.Add("[Flac Picture]");
