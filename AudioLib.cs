@@ -562,6 +562,28 @@ namespace AudioLib
             }
         }
 
+        /// <summary>
+        /// 現在のバランス位置
+        /// </summary>
+        /// <returns></returns>
+        public float getBalance()
+        {
+            if (mPlayerType == PLAYERTYPE.MEDIAPLAYER && mMediaPlayer != null) {
+                return (float)mMediaPlayer.Balance;
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// バランスの設定(-1～１)
+        /// </summary>
+        /// <param name="balance"></param>
+        public void setBalance(float balance)
+        {
+            if (mPlayerType == PLAYERTYPE.MEDIAPLAYER && mMediaPlayer != null) {
+                mMediaPlayer.Balance = balance;     //  -1 ～ 1の範囲
+            }
+        }
 
         /// <summary>
         /// WaveFormatの取得
