@@ -1090,10 +1090,10 @@ namespace AudioLib
         public int getImageDataSize(int n)
         {
             if (mVer.CompareTo("ASF") == 0) {
-                if (0 < mAsfFileTagReader.mImageData.Count && n < mImageData.Count)
+                if (0 < mAsfFileTagReader.mImageData.Count && n < mAsfFileTagReader.mImageData.Count)
                     return mAsfFileTagReader.mImageData[n].PictureData.Length;
             } else if (mVer.CompareTo("FLAC") == 0) {
-                if (0 < mFlacFileTagReader.mImageData.Count && n < mImageData.Count)
+                if (0 < mFlacFileTagReader.mImageData.Count && n < mFlacFileTagReader.mImageData.Count)
                     return mFlacFileTagReader.mImageData[n].PictureData.Length;
             } else {
                 if (0 < mImageData.Count && n < mImageData.Count)
